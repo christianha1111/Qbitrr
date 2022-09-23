@@ -2,8 +2,8 @@
 # (This avoid it auto updating to a higher untested version)
 FROM python:3.10
 
-LABEL Name="qBitrr"
-LABEL Maintainer="Draper"
+LABEL Name="qBitrr_Clone"
+LABEL Maintainer="Christian"
 LABEL Version="2.5.5"
 
 # Env used by the script to determine if its inside a docker -
