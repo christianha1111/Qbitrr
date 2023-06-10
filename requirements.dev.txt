@@ -132,7 +132,7 @@ qbittorrent-api==2021.8.23
     # via qBitrr (setup.py)
 readme-renderer==32.0
     # via twine
-requests==2.26.0
+requests==2.31.0
     # via
     #   pyarr
     #   qBitrr (setup.py)

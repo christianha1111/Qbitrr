@@ -58,7 +58,7 @@ pyparsing==3.0.7
     # via packaging
 qbittorrent-api==2021.8.23
     # via qBitrr (setup.py)
-requests==2.26.0
+requests==2.31.0
     # via
     #   pyarr
     #   qBitrr (setup.py)
