@@ -116,7 +116,7 @@ pyarr==2.0.6
     # via qBitrr (setup.py)
 pycparser==2.21
     # via cffi
-pygments==2.11.2
+pygments==2.15.0
     # via readme-renderer
 pyinstaller==4.8
     # via qBitrr (setup.py)
