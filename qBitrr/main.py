@@ -127,7 +127,7 @@ class qBitManager:
                 self.min_supported_version,
                 self.max_supported_version,
             )
-            sys.exit(1)
+            # sys.exit(1)
 
    
     def app_version(self, **kwargs):
