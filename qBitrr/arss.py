@@ -15,12 +15,13 @@ from typing import TYPE_CHECKING, Callable, Iterable, Iterator, NoReturn
 
 import ffmpeg
 import pathos
+
 import qbittorrentapi
 import requests
 import traceback
 from peewee import JOIN, SqliteDatabase
 from pyarr import RadarrAPI, SonarrAPI
-from qbittorrentapi import TorrentDictionary, TorrentStates
+from qbittorrentapi import TorrentDictionary, TorrentStates 
 
 from qBitrr.arr_tables import CommandsModel, EpisodesModel, MoviesModel, SeriesModel
 from qBitrr.config import (
@@ -3175,18 +3176,19 @@ class Arr:
 
     def spawn_child_processes(self):
         _temp = []
-        if self.search_missing:
-            self.process_search_loop = pathos.helpers.mp.Process(
-                target=self.run_search_loop, daemon=True
-            )
-            self.manager.qbit_manager.child_processes.append(self.process_search_loop)
-            _temp.append(self.process_search_loop)
+        #if self.search_missing:
+        #    self.process_search_loop = pathos.helpers.mp.Process(
+        #        target=self.run_search_loop, daemon=True
+        #    )
+        #    self.manager.qbit_manager.child_processes.append(self.process_search_loop)
+        #    _temp.append(self.process_search_loop)
         if not (QBIT_DISABLED or SEARCH_ONLY):
-            self.process_torrent_loop = pathos.helpers.mp.Process(
-                target=self.run_torrent_loop, daemon=True
-            )
-            self.manager.qbit_manager.child_processes.append(self.process_torrent_loop)
-            _temp.append(self.process_torrent_loop)
+            #self.process_torrent_loop = pathos.helpers.mp.Process(
+            #    target=self.run_torrent_loop, daemon=True
+            #)
+            self.manager.qbit_manager.child_processes.append(self.run_torrent_loop)
+            _temp.append(self.run_torrent_loop)
+
 
         return len(_temp), _temp
 
@@ -3382,7 +3384,7 @@ class ArrManager:
                     continue
                 except (OSError, TypeError) as e:
                     self.logger.exception(e)
-        for cat in self.special_categories:
-            managed_object = PlaceHolderArr(cat, self)
-            self.managed_objects[cat] = managed_object
+        #for cat in self.special_categories:
+        #    managed_object = PlaceHolderArr(cat, self)
+        #    self.managed_objects[cat] = managed_object
         return self

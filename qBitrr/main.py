@@ -5,6 +5,11 @@ import logging
 import sys
 import time
 from multiprocessing import freeze_support
+from pathos.multiprocessing import ProcessingPool as Pool0
+from pathos.multiprocessing import Pool as Pool1
+from pathos.pools import ParallelPool as Pool2
+from pathos.parallel import ParallelPool as Pool3
+
 
 import pathos
 import qbittorrentapi
@@ -13,7 +18,7 @@ import pathlib
 import shutil
 from packaging import version as version_parser
 from packaging.version import Version as VersionClass
-from qbittorrentapi import APINames, login_required, response_text
+from qbittorrentapi import APINames
 
 from qBitrr.arss import ArrManager
 from qBitrr.bundled_data import patched_version
@@ -122,10 +127,9 @@ class qBitManager:
                 self.min_supported_version,
                 self.max_supported_version,
             )
-            sys.exit(1)
+            # sys.exit(1)
 
-    @response_text(str)
-    @login_required
+   
     def app_version(self, **kwargs):
         return self.client._get(
             _name=APINames.Application,
@@ -134,7 +138,7 @@ class qBitManager:
             _retry_backoff_factor=0,
             **kwargs,
         )
-
+    
     @property
     def is_alive(self) -> bool:
         try:
@@ -149,7 +153,7 @@ class qBitManager:
         self.should_delay_torrent_scan = True
         return False
 
-    def get_child_processes(self) -> list[pathos.helpers.mp.Process]:
+    def get_child_processes(self):
         run_logs(self.logger)
         self.logger.hnotice("Managing %s categories", len(self.arr_manager.managed_objects))
         count = 0
@@ -160,11 +164,22 @@ class qBitManager:
             procs.extend(processes)
         return procs
 
+    def start_arrs(self, func):
+        self.logger.notice("Starting child processes")
+        func()
+        self.logger.notice("Finishing child processes")
+
     def run(self):
         try:
             self.logger.notice("Starting %s child processes", len(self.child_processes))
-            [p.start() for p in self.child_processes]
-            [p.join() for p in self.child_processes]
+            p = Pool1(2)
+            dataset = range(0,10000)
+            p.map(self.start_arrs, self.child_processes)
+            
+            #for p in self.child_processes:
+            #    logger.notice("forforfor")
+            #    p.start() 
+            #[p.join() for p in self.child_processes]
         except KeyboardInterrupt:
             self.logger.hnotice("Detected Ctrl+C - Terminating process")
             sys.exit(0)
@@ -181,7 +196,7 @@ def run():
     logger.notice("Starting qBitrr: Version: %s.", patched_version)
     manager = qBitManager()
     run_logs(logger)
-    logger.debug("Environment variables: %r", ENVIRO_CONFIG)
+    #logger.debug("Environment variables: %r", ENVIRO_CONFIG)
     try:
         if CHILD_PROCESSES := manager.get_child_processes():
             manager.run()
@@ -210,3 +225,4 @@ atexit.register(cleanup)
 if __name__ == "__main__":
     freeze_support()
     run()
+    logger.notice("All Done.")
