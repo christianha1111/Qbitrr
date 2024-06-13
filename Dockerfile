@@ -2,9 +2,9 @@
 # (This avoid it auto updating to a higher untested version)
 FROM python:3.10
 
-LABEL Name="qBitrr"
-LABEL Maintainer="feramance"
-LABEL Version="4.7.5"
+LABEL Name="qBitrr_Clone"
+LABEL Maintainer="Christian"
+LABEL Version="2.5.6"
 LABEL org.opencontainers.image.source=https://github.com/feramance/qbitrr
 
 # Env used by the script to determine if its inside a docker -

@@ -3204,6 +3204,50 @@ class Arr:
                 torrent.hash,
             )
 
+    def _reset_strikes(self, torrent: qbittorrentapi.TorrentDictionary):
+        counter_file = pathlib.Path.cwd().joinpath("counters/"+ torrent.hash)
+        try: 
+            self.logger.info(f"Counter File {counter_file} strikes to be reset")
+            counter_file.unlink() #detele file
+            self.logger.info(f"Counter File {counter_file} strikes reset")
+        except (FileNotFoundError, OSError ) as err:
+                self.logger.info(f"Counter File {counter_file} error resetting strikes - {err}")
+        return
+
+    def _multiple_strike_check(self, torrent: qbittorrentapi.TorrentDictionary):
+        counter_file = pathlib.Path.cwd().joinpath("counters/"+ torrent.hash)
+        counter = int(1)
+        counter_min = int(3)
+        try:
+            with open(counter_file, "r", encoding="utf8") as file:
+                self.logger.info(f"Counter File {counter_file} open for read")
+                counter = int(file.read())
+                self.logger.info(f"Counter File {counter_file} previous fails {counter}")
+                counter+=1
+        except (FileNotFoundError, OSError ) as err:
+            self.logger.info(f"Counter File {counter_file} not found must be created - {err}")            
+        
+        self.logger.info(f"Counter File {counter_file} current_fails  {counter} min_fails {counter_min}")
+        self.logger.info(f"Counter File {counter_file} callstack  {traceback.format_exc()}")
+        
+        if counter < counter_min:
+            try:
+                with open(counter_file, "w", encoding="utf8") as file:
+                    self.logger.info(f"Counter File {counter_file} open for write")
+                    counter_file.write_text(str(counter))
+                    self.logger.info(f"Counter File {counter_file} fails {counter} written")
+            except (FileNotFoundError, OSError ) as err:
+                    self.logger.info(f"Counter File {counter_file} error writing - {err}")
+        else:
+            try: 
+                self.logger.info(f"Counter File {counter_file} to be deleted")
+                counter_file.unlink() #detele file
+                self.logger.info(f"Counter File {counter_file} deleted")
+            except (FileNotFoundError, OSError ) as err:
+                    self.logger.info(f"Counter File {counter_file} error writing - {err}")
+                    counter = counter_min
+        return counter_min == counter
+
     def _process_single_torrent_stalled_torrent(
         self, torrent: qbittorrentapi.TorrentDictionary, extra: str
     ):
@@ -3213,7 +3257,7 @@ class Arr:
         if (
             self.recently_queue.get(torrent.hash, torrent.added_on)
             < time.time() - self.ignore_torrents_younger_than
-        ):
+        ) and (self._multiple_strike_check(torrent)):
             self.logger.info(
                 "Deleting Stale torrent: %s | "
                 "[Progress: %s%%][Added On: %s]"
@@ -4101,6 +4145,7 @@ class Arr:
                     self._process_single_torrent_already_cleaned_up(torrent)
                     return
                 # A downloading torrent is not stalled, parse its contents.
+                self._reset_strikes(torrent)
                 self._process_single_torrent_process_files(torrent)
         elif self.is_complete_state(torrent) and leave_alone:
             self._process_single_completed_paused_torrent(torrent, leave_alone)

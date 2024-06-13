@@ -4,6 +4,7 @@ import atexit
 import itertools
 import logging
 import pathlib
+import shutil
 import sys
 import time
 from multiprocessing import freeze_support
@@ -119,6 +120,12 @@ class qBitManager:
             self.logger.error(
                 "FFprobe manager error: %s while attempting to download/update FFprobe", e
             )
+
+        counter_file = pathlib.Path.cwd().joinpath("counters")
+        counter_file.mkdir(parents=True, exist_ok=True) #create folder, doesn't matter if already exists. makes sure next line doesn't fail
+        shutil.rmtree(counter_file) #detele folder
+        counter_file.mkdir(parents=True, exist_ok=True) #create folder
+
         self.arr_manager = ArrManager(self).build_arr_instances()
         run_logs(self.logger)
 
