@@ -26,6 +26,6 @@ RUN pip install --quiet .
 RUN rm -r /app/Qbitrr
 WORKDIR /config
 
-# ENTRYPOINT ["python", "-m", "qBitrr.main"]
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["python", "-m", "qBitrr.main"]
+# ENTRYPOINT ["/bin/bash"]
 # python -m qBitrr.main
