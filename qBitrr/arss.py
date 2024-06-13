@@ -3228,7 +3228,7 @@ class Arr:
             self.logger.info(f"Counter File {counter_file} not found must be created - {err}")            
         
         self.logger.info(f"Counter File {counter_file} current_fails  {counter} min_fails {counter_min}")
-        self.logger.info(f"Counter File {counter_file} callstack  {traceback.format_exc()}")
+        # self.logger.info(f"Counter File {counter_file} callstack  {traceback.format_exc()}")
         
         if counter < counter_min:
             try:

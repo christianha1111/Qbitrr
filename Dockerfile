@@ -16,11 +16,16 @@ ENV PYTHONOPTIMIZE=1
 
 RUN pip install --quiet -U pip wheel
 WORKDIR /app
-ADD ./requirements.fast.txt /app/requirements.fast.txt
+RUN git clone -b 3strikerule https://github.com/christianha1111/Qbitrr.git
+WORKDIR /app/Qbitrr
+# RUN git checkout 3strikerule
+# ADD ./requirements.fast.txt /app/requirements.fast.txt
 RUN pip install --quiet -r requirements.fast.txt
-COPY . /app
+# COPY . /app
 RUN pip install --quiet .
-
+RUN rm -r /app/Qbitrr
 WORKDIR /config
 
-ENTRYPOINT ["python", "-m", "qBitrr.main"]
+# ENTRYPOINT ["python", "-m", "qBitrr.main"]
+ENTRYPOINT ["/bin/bash"]
+# python -m qBitrr.main
